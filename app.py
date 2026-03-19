@@ -298,7 +298,7 @@ else:
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-label">Risk Score</div>
-            <div class="metric-value {cat_color}">{risk_score}</div>
+            <div class="metric-value {cat_color}">{risk_score:.1f}</div>
         </div>""", unsafe_allow_html=True)
     with col2:
         st.markdown(f"""
