@@ -41,7 +41,7 @@ pub_rec_bankruptcies = st.number_input("Public Record Bankruptcies", 0, 5, 0)
 # Feature Engineering
 # -----------------------------
 loan_to_income = loan_amnt / (annual_inc + 1)
-installment_to_income = installment / (annual_inc + 1)
+installment_to_income = installment / (annual_inc / 12 + 1)
 revol_bal_to_income = revol_bal / (annual_inc + 1)
 
 grade_map = {'A':1,'B':2,'C':3,'D':4,'E':5,'F':6,'G':7}
