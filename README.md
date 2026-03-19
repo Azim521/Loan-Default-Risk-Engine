@@ -1,136 +1,196 @@
 # 💰 Loan Default Risk Prediction & Scoring Engine
 
-An end-to-end machine learning system to predict borrower default probability using 1.3M+ historical Lending Club loan records.
+> End-to-end credit risk system that predicts borrower default probability and converts it into a business-friendly **0–100 risk score** — trained on 1.3M+ real Lending Club loans.
 
-The model estimates probability of default and converts it into a business-friendly **0–100 risk score**.  
-The system is deployed as a live Streamlit web application.
-
----
-
-## 🚀 Live Application
-
-🔗 **Try the live app here:**  
-[(Streamlit App)](https://loan-default-risk-engine-gxibehstp7sugrrart2cfa.streamlit.app/)
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://loan-default-risk-engine-gxibehstp7sugrrart2cfa.streamlit.app/)
+![Python](https://img.shields.io/badge/Python-3.10-blue?style=flat&logo=python)
+![XGBoost](https://img.shields.io/badge/XGBoost-Model-orange?style=flat)
+![SHAP](https://img.shields.io/badge/SHAP-Explainability-brightgreen?style=flat)
 
 ---
 
-## 📌 Problem Statement
+## 🚀 Live Demo
 
-Financial institutions need to evaluate borrower credit risk before approving loans.  
-This project builds a predictive model to:
-
-- Estimate probability of default
-- Identify key drivers of credit risk
-- Convert predictions into interpretable risk scores
+👉 **[loan-default-risk-engine-gxibehstp7sugrrart2cfa.streamlit.app](https://loan-default-risk-engine-gxibehstp7sugrrart2cfa.streamlit.app/)**
 
 ---
 
-## 📊 Dataset
+## 📸 App Preview
 
-- Source: Lending Club Loan Dataset (Kaggle)
-- Total Records Used: ~1.3 Million
-- Target Variable:
-  - `0` → Fully Paid
-  - `1` → Charged Off (Default)
-
-Data leakage features were removed to ensure realistic modeling.
+![App Screenshot](screenshot.png)
 
 ---
 
-## 🧹 Data Processing & Feature Engineering
+## ✨ What Makes This Different
 
-### Key Steps:
-- Filtered finalized loans only
-- Created binary default variable
-- Removed data leakage columns
-- Handled missing values using median imputation
-- Cleaned employment length feature
-- Applied one-hot encoding to categorical variables
-- Stratified train-test split
-
-### Engineered Financial Stress Features:
-- Loan-to-Income Ratio
-- Installment-to-Income Ratio
-- Revolving Balance-to-Income Ratio
-- Ordinal Loan Grade Encoding
+| Typical credit risk model | This project |
+|---|---|
+| Binary output only (default / no default) | Probability score + **0–100 risk score** |
+| Single model | 3-model comparison (LR, RF, XGBoost) |
+| No explainability | SHAP identifies key default drivers |
+| No leakage prevention | Post-outcome columns explicitly removed |
+| Academic only | Live interactive Streamlit app |
 
 ---
 
-## 🤖 Models Compared
+## 📌 Overview
+
+Built on the **Lending Club Loan Dataset** (1.3M+ finalized loans), this system:
+
+- Predicts default probability with **0.7203 ROC-AUC**
+- Converts probability into an interpretable **0–100 risk score**
+- Classifies borrowers into Low / Medium / High risk categories
+- Uses **SHAP** to identify top default drivers per prediction
+- Deployed as a fully interactive Streamlit dashboard with sidebar inputs, risk gauge, and risk factor analysis
+
+---
+
+## 📊 Model Performance
 
 | Model | ROC-AUC |
-|--------|----------|
-| Logistic Regression | 0.706 |
-| Random Forest | 0.699 |
-| XGBoost | **0.719** |
+|---|---|
+| **XGBoost** | **0.7203** |
+| Logistic Regression | 0.7090 |
+| Random Forest | 0.7066 |
 
-XGBoost achieved the best ranking performance and was selected as the final model.
-
----
-
-## 📈 Model Evaluation
-
-- Class imbalance handled using `scale_pos_weight`
-- Precision-Recall tradeoff analyzed
-- ROC-AUC used as primary evaluation metric
-- Final ROC-AUC: **~0.72**
+- Class imbalance (80/20) handled using `scale_pos_weight`
+- Time-based stratified train/test split — no data leakage
+- Only pre-application features used
 
 ---
 
-## 🔎 Model Explainability (SHAP)
+## 🔑 Key Default Drivers (SHAP)
 
-SHAP analysis identified the strongest drivers of default risk:
-
-- Loan Grade
-- Interest Rate
-- Debt-to-Income Ratio
-- Loan Term
-- Credit Utilization
-
-This improves transparency and model trustworthiness.
-
----
-
-## 💰 Risk Scoring System
-
-Predicted probability is converted into a **0–100 risk score**:
-
-- 0–30 → Low Risk  
-- 30–60 → Medium Risk  
-- 60–100 → High Risk  
-
-This enables practical credit decision-making.
+| Feature | Impact |
+|---|---|
+| Interest Rate | Higher rate → higher default risk |
+| Loan Grade | Grade G borrowers default ~5x more than Grade A |
+| Debt-to-Income Ratio | Strong positive correlation with default |
+| Loan-to-Income Ratio | Engineered feature — captures relative loan burden |
+| Revolving Utilization | High utilization signals financial stress |
+| Loan Term | 60-month loans default more than 36-month |
 
 ---
 
-## 🛠 Tech Stack
+## 🧠 Feature Engineering
 
-- Python
-- Pandas / NumPy
-- Scikit-learn
-- XGBoost
-- SHAP
-- Streamlit
+Four financial stress features engineered from raw inputs:
 
----
-
-## 📦 Deployment
-
-The application is deployed using **Streamlit Cloud** and allows real-time borrower risk prediction.
+| Feature | Formula | Why |
+|---|---|---|
+| `loan_to_income` | loan_amnt / annual_inc | Relative loan burden |
+| `installment_to_income` | installment / (annual_inc/12) | Monthly payment vs monthly income |
+| `revol_bal_to_income` | revol_bal / annual_inc | Revolving debt load |
+| `grade_ordinal` | A=1 → G=7 | Numeric credit grade encoding |
 
 ---
 
-## 📌 Key Takeaways
+## 🏗️ ML Pipeline
 
-- Built full ML pipeline from raw data to deployment
-- Handled class imbalance in large-scale dataset
-- Applied feature engineering based on financial domain knowledge
-- Integrated explainable AI (SHAP)
-- Delivered production-ready web application
+```
+Lending Club Dataset (1.3M+ loans)
+        ↓
+  Filter finalized loans → Create binary target
+        ↓
+  Remove data leakage columns
+        ↓
+  Feature selection + missing value imputation
+        ↓
+  Feature engineering (stress ratios)
+        ↓
+  One-hot encoding + stratified train/test split
+        ↓
+  Model comparison: LR / RF / XGBoost
+        ↓
+  XGBoost selected (best ROC-AUC)
+        ↓
+  SHAP explainability + Risk scoring (0–100)
+        ↓
+  Streamlit deployment
+```
 
 ---
 
-## 👤 Author
+## 🗃️ Dataset
 
-Azim Sadath  
-Aspiring Data Scientist | Machine Learning Enthusiast
+| Property | Value |
+|---|---|
+| Source | Lending Club Loan Dataset (Kaggle) |
+| Total records | 2.26M |
+| Finalized loans used | 1.3M+ |
+| Features | 18 pre-application features + 4 engineered |
+| Target | 0 = Fully Paid, 1 = Charged Off |
+| Class ratio | ~80% paid / ~20% default |
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Model | XGBoost |
+| Explainability | SHAP |
+| Imbalance Handling | `scale_pos_weight` |
+| Frontend | Streamlit |
+| Visualization | Matplotlib |
+| Data Processing | Pandas, NumPy, Scikit-learn |
+
+---
+
+## 💻 Run Locally
+
+```bash
+# 1. Clone the repo
+git clone https://github.com/Azim521/Loan-Default-Risk-Engine.git
+cd Loan-Default-Risk-Engine
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+# 3. Run the app
+streamlit run app.py
+```
+
+---
+
+## 📁 Project Structure
+
+```
+Loan-Default-Risk-Engine/
+├── app.py                    ← Streamlit dashboard
+├── requirements.txt          ← Dependencies
+├── screenshot.png            ← App preview
+├── loan_default_eda.ipynb    ← Full EDA + model training notebook
+└── model/
+    ├── xgb_loan_model.pkl    ← Trained XGBoost model
+    └── feature_columns.pkl   ← Feature schema for inference
+```
+
+---
+
+## 📓 EDA Notebook
+
+Full exploratory analysis, feature engineering, model training and evaluation:
+
+👉 [View Notebook](loan_default_eda.ipynb)
+
+Covers: target distribution, missing value analysis, feature distributions, correlation analysis, leakage removal, engineered features, model comparison, SHAP, and risk scoring.
+
+---
+
+## 🔮 Future Improvements
+
+- Hyperparameter tuning with time-series cross-validation
+- Add SHAP waterfall chart per prediction in the app
+- Integrate with credit bureau API for real-time scoring
+- Extend to multi-label risk tiers
+
+---
+
+## 📬 Contact
+
+Built by **Azim Sadath**
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/azim-sadath-a3ba34321/)
+[![GitHub](https://img.shields.io/badge/GitHub-Azim521-black?style=flat&logo=github)](https://github.com/Azim521)
+[![Email](https://img.shields.io/badge/Email-azimsadath521@gmail.com-red?style=flat&logo=gmail)](mailto:azimsadath521@gmail.com)
